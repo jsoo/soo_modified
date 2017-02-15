@@ -1,7 +1,7 @@
 <?php
 
 $plugin['name'] = 'soo_modified';
-$plugin['version'] = '0.1.0';
+$plugin['version'] = '0.1.1';
 $plugin['author'] = 'Jeff Soo';
 $plugin['author_uri'] = 'http://ipsedixit.net/txp/';
 $plugin['description'] = 'Tags for article modification dates';
@@ -39,27 +39,36 @@ function soo_if_modified_author ( $atts, $thing )
 	global $thisarticle;
 	
 	extract(lAtts(array(
-		'id'	=>  '',
-		'name'	=>  '',
+		'id' => '',
+		'name' => '',
 	), $atts));
 	
-	if ( $name )
+	static $users = array();
+
+	if ( $name and ( ! $authorid = array_search($name, $users) ) )
 	{
-		if (!$authorid = fetch('name','txp_users','RealName', doSlash($name)))
+		$user_id = fetch('name','txp_users', 'RealName', doSlash($name));
+		if ( ! $user_id )
+		{
 			trigger_error(gTxt('tag_error') . ' ' . __FUNCTION__ . ' ' 
 				. gTxt('unknown_author', array('name' => $name)));
+			$user_id = 'unknown';
+		}
+		$authorid = $users[$user_id] = $name;
 	}
-	elseif ( $id )
+	elseif ( $id and ( ! $authorid = array_search($id, $users) ) )
 	{
 		if ( ! safe_count('txp_users', 'name = "' . doSlash($id) . '"') )
+		{
 			trigger_error(gTxt('tag_error') . ' ' . __FUNCTION__ . ' ' 
 				. gTxt('unknown_author', array('name' => $id)));
-		$authorid = $id;
+		}
+		$authorid = $users[$id] = $id;
 	}
 	else
 		$authorid = $thisarticle['authorid'];
 	
-	$mod_id = fetch('LastModID','textpattern','ID', $thisarticle['thisid']);
+	$mod_id = _soo_modified_author_id($thisarticle['thisid']);
 	
 	return parse(EvalElse($thing, $mod_id == $authorid));
 }
@@ -69,12 +78,20 @@ function soo_modified_author ( $atts )
 	assert_article();
 	global $thisarticle;
 	extract(lAtts(array(
-		'fullname'	=>  1,
+		'fullname' => 1,
 	), $atts));
 	
-	$author_id = fetch('LastModID','textpattern','ID', $thisarticle['thisid']);
+	$author_id = _soo_modified_author_id($thisarticle['thisid']);
 	
 	return $fullname ? get_author_name($author_id) : $author_id;
+}
+
+function _soo_modified_author_id ( $article_id )
+{
+	static $mod_ids = array();
+	if ( empty($mod_ids[$article_id]) )
+		$mod_ids[$article_id] = fetch('LastModID','textpattern','ID', $article_id);
+	return $mod_ids[$article_id];
 }
 
 # --- END PLUGIN CODE ---
@@ -118,6 +135,7 @@ h2. Contents
 * "soo_modified_author":#soo_modified_author
 * "soo_if_modified":#soo_if_modified
 * "soo_if_modified_author":#soo_if_modified_author
+* "Notes":#notes
 * "History":#history
 
  </div>
@@ -171,7 +189,18 @@ If neither attribute is used, the tag will compare the author who last modified 
 * @id@ _(Txp author id)_ Txp ID of author to compare. %(default)Default% empty.
 * @name@ _(Txp author id)_ Full name of author to compare. (This must exactly match a full name from the txp_users table.) %(default)Default% empty.
 
+h2(#notes). Notes
+
+Two of the tags, @soo_modified_author@ and @soo_if_modified_author@, can generate one or more database queries. This is unlikely to have a noticeable effect on performance, except possibly for very large article lists. (The plugin uses static variables to minimize the number of calls, but each distinct article on the page still generates at least one call.)
+
+
 h2(#history). Version History
+
+h3. 0.1.1 (2011/1/1)
+
+* Performance improvements (fewer database queries) for certain situations:
+** When both @soo_if_modified_author@ and @soo_modified_author@ are called
+** When using @soo_if_modified_author@ or @soo_modified_author@ in an article list
 
 h3. 0.1.0 (2010/12/31)
 
