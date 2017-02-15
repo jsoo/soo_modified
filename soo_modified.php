@@ -1,7 +1,7 @@
 <?php
 
 $plugin['name'] = 'soo_modified';
-$plugin['version'] = '0.1.1';
+$plugin['version'] = '0.1.2';
 $plugin['author'] = 'Jeff Soo';
 $plugin['author_uri'] = 'http://ipsedixit.net/txp/';
 $plugin['description'] = 'Tags for article modification dates';
@@ -10,6 +10,14 @@ $plugin['type'] = 0;
 @include_once('zem_tpl.php');
 
 # --- BEGIN PLUGIN CODE ---
+
+if(class_exists('\Textpattern\Tag\Registry')) {
+	Txp::get('\Textpattern\Tag\Registry')
+		->register('soo_if_modified')
+		->register('soo_if_modified_author')
+		->register('soo_modified_author')
+		;
+}
 
 function soo_if_modified ( $atts, $thing )
 {
@@ -195,6 +203,10 @@ Two of the tags, @soo_modified_author@ and @soo_if_modified_author@, can generat
 
 
 h2(#history). Version History
+
+h3. 0.1.2 (2017/2/15)
+
+* Textpattern 4.6 compatibility update
 
 h3. 0.1.1 (2011/1/1)
 
