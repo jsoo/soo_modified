@@ -1,0 +1,93 @@
+h1. soo_modified
+
+This is a plugin for "Textpattern":http://textpattern.com.
+
+* "Support forum topic":http://forum.textpattern.com/viewtopic.php?id=35196
+* "Author site":http://ipsedixit.net/txp/126/soo_modified
+* "GitHub":https://github.com/jsoo/soo_modified
+
+notextile. <div id="toc">
+
+h2. Contents
+
+* "Overview":#overview
+* "soo_modified_author":#soo_modified_author
+* "soo_if_modified":#soo_if_modified
+* "soo_if_modified_author":#soo_if_modified_author
+* "Notes":#notes
+* "History":#history
+
+notextile. </div>
+
+h1. soo_modified
+
+h2(#overview). Overview
+
+Inspired by "ob1_modified":https://forum.textpattern.io/viewtopic.php?id=3710, *soo_modified* includes tags for dealing with article modification information. These supplement the basic function offered by the core "modified":https://docs.textpattern.io/tags/modified tag.
+
+h2(#soo_modified_author). soo_modified_author
+
+Output the name of the author who most recently modified the current article.
+
+pre. <txp:soo_modified_author />
+
+h3. Attributes
+
+* @fullname@ _(boolean)_ Whether to output the author's full name or id. %(default)Default% 1, output the author's full name.
+
+h2(#soo_if_modified). soo_if_modified
+
+Conditional tag that compares the current article's modification date to its posted date.
+
+pre. <txp:soo_if_modified>
+...
+<txp:else />
+...
+</txp:soo_if_modified>
+
+h3. Attributes
+
+* @format@ _("strftime() format string":http://us3.php.net/manual/en/function.strftime.php)_ Date format to use for comparing the dates. %(default)Defaults% to site preference for date format in the current context.
+
+By using a date format that doesn't include the time of day, this tag will evaluate to true only if the last-modification stamp is on a different day than the posted stamp.
+
+h2(#soo_if_modified_author). soo_if_modified_author
+
+Conditional tag that compares the author who most recently modified the current article to the article's author, or to the specified author.
+
+pre. <txp:soo_if_modified_author>
+...
+<txp:else />
+...
+</txp:soo_if_modified_author>
+
+h3. Attributes
+
+If neither attribute is used, the tag will compare the author who last modified the article to the author who posted it.
+
+* @id@ _(Txp author id)_ Txp ID of author to compare. %(default)Default% empty.
+* @name@ _(Txp author id)_ Full name of author to compare. (This must exactly match a full name from the txp_users table.) %(default)Default% empty.
+
+h2(#notes). Notes
+
+Two of the tags, @soo_modified_author@ and @soo_if_modified_author@, can generate one or more database queries. This is unlikely to have a noticeable effect on performance, except possibly for very large article lists. (The plugin uses static variables to minimize the number of calls, but each distinct article on the page still generates at least one call.)
+
+
+h2(#history). Version History
+
+h3. 0.1.2 (2017/2/15)
+
+* Textpattern 4.6 compatibility update
+
+h3. 0.1.1 (2011/1/1)
+
+* Performance improvements (fewer database queries) for certain situations:
+** When both @soo_if_modified_author@ and @soo_modified_author@ are called
+** When using @soo_if_modified_author@ or @soo_modified_author@ in an article list
+
+h3. 0.1.0 (2010/12/31)
+
+* Initial release
+* @soo_modified_author@
+* @soo_if_modified@
+* @soo_if_modified_author@
