@@ -2,7 +2,7 @@ h1. soo_modified
 
 This is a plugin for "Textpattern":http://textpattern.com.
 
-* "Support forum topic":http://forum.textpattern.com/viewtopic.php?id=35196
+* "Support forum topic":http://forum.textpattern.io/viewtopic.php?id=35196
 * "Author site":http://ipsedixit.net/txp/126/soo_modified
 * "GitHub":https://github.com/jsoo/soo_modified
 
